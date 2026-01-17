@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { DetectedProblem } from '../App'
+import { Problem } from '../types'
 import './GuidedHintSystem.css'
 
 interface GuidedHintSystemProps {
-  problem: DetectedProblem
+  problem: Problem
 }
 
 const hints = [
@@ -21,7 +21,7 @@ function GuidedHintSystem({ problem }: GuidedHintSystemProps) {
     if (revealedHints.length < hints.length) {
       setRevealedHints([...revealedHints, revealedHints.length])
     }
-    
+
     if (revealedHints.length === hints.length - 1) {
       setShowSolutionRequest(true)
     }
@@ -36,33 +36,33 @@ function GuidedHintSystem({ problem }: GuidedHintSystemProps) {
       <div className="hint-system-header">
         <h2 className="hint-system-title">Guided Hint System</h2>
         <div className="hint-system-subtitle">
-          Problem: <strong>{problem.title}</strong>
+          Problem: <strong>{problem.name}</strong>
         </div>
       </div>
-      
+
       <div className="hint-warning">
         <span className="warning-icon">⚠️</span>
         <span className="warning-text">
           Hints are designed to guide, not give away the solution.
         </span>
       </div>
-      
+
       <div className="hint-progress">
         <span className="progress-text">
           Hint {Math.min(revealedHints.length + 1, hints.length)} of {hints.length}
         </span>
         <div className="progress-bar">
-          <div 
+          <div
             className="progress-fill"
             style={{ width: `${(revealedHints.length / hints.length) * 100}%` }}
           />
         </div>
       </div>
-      
+
       <div className="hints-container">
         {hints.map((hint, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`hint-card ${isHintRevealed(index) ? 'revealed' : 'locked'}`}
             style={{ animationDelay: `${index * 0.1}s` }}
           >
@@ -82,13 +82,13 @@ function GuidedHintSystem({ problem }: GuidedHintSystemProps) {
           </div>
         ))}
       </div>
-      
+
       {revealedHints.length < hints.length && (
         <button className="reveal-hint-button" onClick={revealNextHint}>
           Reveal Next Hint →
         </button>
       )}
-      
+
       {showSolutionRequest && (
         <div className="solution-request fade-in">
           <div className="solution-request-warning">

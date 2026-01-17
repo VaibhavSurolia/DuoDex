@@ -1,77 +1,79 @@
+import { Problem } from '../types'
+import { calculateStats } from '../utils/problemUtils'
 import './StatsSidePanel.css'
 
-function StatsSidePanel() {
-  const stats = {
-    detectedToday: 12,
-    solved: 8,
-    stuck: 4,
-    weakTopics: ['Graphs', 'Dynamic Programming'],
-    currentDifficulty: 'Medium'
+interface StatsSidePanelProps {
+  allProblems: Problem[]
+}
+
+function StatsSidePanel({ allProblems }: StatsSidePanelProps) {
+  if (allProblems.length === 0) {
+    return (
+      <aside className="stats-panel">
+        <div className="stats-header">
+          <h3 className="stats-title">Dataset Stats</h3>
+        </div>
+        <div className="stats-content">
+          <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+            Loading statistics...
+          </p>
+        </div>
+      </aside>
+    )
   }
 
-  const solvedRatio = stats.solved / stats.detectedToday
-  const stuckRatio = stats.stuck / stats.detectedToday
+  const stats = calculateStats(allProblems)
 
   return (
     <aside className="stats-panel">
       <div className="stats-header">
-        <h3 className="stats-title">Real-Time Stats</h3>
+        <h3 className="stats-title">Dataset Stats</h3>
       </div>
-      
+
       <div className="stats-content">
         <div className="stat-card">
-          <div className="stat-label">Problems Detected Today</div>
-          <div className="stat-value primary">{stats.detectedToday}</div>
+          <div className="stat-label">Total Problems</div>
+          <div className="stat-value primary">{stats.total}</div>
         </div>
-        
+
         <div className="stat-card">
-          <div className="stat-label">Solved</div>
-          <div className="stat-value success">{stats.solved}</div>
-          <div className="stat-progress">
-            <div 
-              className="stat-progress-fill success-fill"
-              style={{ width: `${solvedRatio * 100}%` }}
-            />
+          <div className="stat-label">By Difficulty</div>
+          <div className="difficulty-breakdown">
+            <div className="difficulty-item">
+              <span className="difficulty-name easy">Easy</span>
+              <span className="difficulty-count">{stats.byDifficulty.Easy}</span>
+            </div>
+            <div className="difficulty-item">
+              <span className="difficulty-name medium">Medium</span>
+              <span className="difficulty-count">{stats.byDifficulty.Medium}</span>
+            </div>
+            <div className="difficulty-item">
+              <span className="difficulty-name hard">Hard</span>
+              <span className="difficulty-count">{stats.byDifficulty.Hard}</span>
+            </div>
           </div>
         </div>
-        
+
         <div className="stat-card">
-          <div className="stat-label">Stuck</div>
-          <div className="stat-value warning">{stats.stuck}</div>
-          <div className="stat-progress">
-            <div 
-              className="stat-progress-fill warning-fill"
-              style={{ width: `${stuckRatio * 100}%` }}
-            />
-          </div>
+          <div className="stat-label">Avg. Acceptance Rate</div>
+          <div className="stat-value success">{stats.averageAcceptanceRate.toFixed(1)}%</div>
         </div>
-        
+
         <div className="stat-card">
-          <div className="stat-label">Weak Topics</div>
-          <div className="weak-topics">
-            {stats.weakTopics.map((topic, index) => (
-              <span key={index} className="weak-topic-tag">
-                {topic}
-              </span>
+          <div className="stat-label">Top Topics</div>
+          <div className="topic-list">
+            {stats.topTopics.slice(0, 5).map((topic, index) => (
+              <div key={index} className="topic-item">
+                <span className="topic-name">{topic.topic}</span>
+                <span className="topic-count">{topic.count}</span>
+              </div>
             ))}
           </div>
         </div>
-        
+
         <div className="stat-card">
-          <div className="stat-label">Current Difficulty Progression</div>
-          <div className="difficulty-progression">
-            <div className="difficulty-levels">
-              <div className={`difficulty-level ${stats.currentDifficulty === 'Easy' ? 'active' : 'completed'}`}>
-                Easy
-              </div>
-              <div className={`difficulty-level ${stats.currentDifficulty === 'Medium' ? 'active' : stats.currentDifficulty === 'Hard' ? 'completed' : ''}`}>
-                Medium
-              </div>
-              <div className={`difficulty-level ${stats.currentDifficulty === 'Hard' ? 'active' : ''}`}>
-                Hard
-              </div>
-            </div>
-          </div>
+          <div className="stat-label">Avg. Like Ratio</div>
+          <div className="stat-value primary">{(stats.averageLikeRatio * 100).toFixed(1)}%</div>
         </div>
       </div>
     </aside>

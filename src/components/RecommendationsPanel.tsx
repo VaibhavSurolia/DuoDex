@@ -1,50 +1,18 @@
-import { DetectedProblem } from '../App'
+import { Problem } from '../types'
+import { findSimilarProblems, findNextHarderProblems } from '../utils/problemUtils'
+import { getLeetCodeUrl } from '../utils/dataLoader'
 import './RecommendationsPanel.css'
 
 interface RecommendationsPanelProps {
-  currentProblem: DetectedProblem
+  currentProblem: Problem
+  allProblems: Problem[]
+  onSelectProblem: (problem: Problem) => void
 }
 
-interface RecommendedProblem {
-  title: string
-  difficulty: 'Easy' | 'Medium' | 'Hard'
-  tags: string[]
-  platform: 'LeetCode' | 'Codeforces'
-  similarity: string
-}
-
-function RecommendationsPanel({ currentProblem }: RecommendationsPanelProps) {
-  // Mock recommendations data - in a real app, this would come from a dataset
-  const recommendations: RecommendedProblem[] = [
-    {
-      title: 'Three Sum',
-      difficulty: 'Medium',
-      tags: ['Array', 'Hash Table', 'Two Pointers'],
-      platform: 'LeetCode',
-      similarity: 'Similar problem structure'
-    },
-    {
-      title: 'Four Sum',
-      difficulty: 'Medium',
-      tags: ['Array', 'Hash Table', 'Two Pointers'],
-      platform: 'LeetCode',
-      similarity: 'Next progression'
-    },
-    {
-      title: 'Subarray Sum Equals K',
-      difficulty: 'Medium',
-      tags: ['Array', 'Hash Table'],
-      platform: 'LeetCode',
-      similarity: 'Related concept'
-    },
-    {
-      title: 'Two Sum IV - Input is a BST',
-      difficulty: 'Easy',
-      tags: ['Tree', 'Hash Table'],
-      platform: 'LeetCode',
-      similarity: 'Variation with tree structure'
-    }
-  ]
+function RecommendationsPanel({ currentProblem, allProblems, onSelectProblem }: RecommendationsPanelProps) {
+  // Get similar problems and next harder problems
+  const similarProblems = findSimilarProblems(currentProblem, allProblems, 3)
+  const harderProblems = findNextHarderProblems(currentProblem, allProblems, 3)
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -59,55 +27,98 @@ function RecommendationsPanel({ currentProblem }: RecommendationsPanelProps) {
     }
   }
 
-  const getPlatformIcon = (platform: string) => {
-    return platform === 'LeetCode' ? '📘' : '🔴'
-  }
+  const renderProblemCard = (problem: Problem, index: number, type: 'similar' | 'harder') => (
+    <div key={problem.id} className="recommendation-card fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+      <div className="recommendation-header">
+        <div className="recommendation-platform">
+          <span className="platform-icon">📘</span>
+          <span>LeetCode #{problem.id}</span>
+        </div>
+        <span
+          className="recommendation-difficulty"
+          style={{ color: getDifficultyColor(problem.difficulty) }}
+        >
+          {problem.difficulty}
+        </span>
+      </div>
+
+      <h3 className="recommendation-title">{problem.name}</h3>
+
+      <div className="recommendation-meta">
+        <span title="Acceptance Rate">✓ {problem.acceptanceRate.toFixed(1)}%</span>
+        <span title="Likes">👍 {problem.likes.toLocaleString()}</span>
+        <span title="Like Ratio">❤️ {(problem.likeRatio * 100).toFixed(1)}%</span>
+      </div>
+
+      <div className="recommendation-tags">
+        {problem.topics.slice(0, 3).map((tag, tagIndex) => (
+          <span key={tagIndex} className="recommendation-tag">
+            {tag}
+          </span>
+        ))}
+        {problem.topics.length > 3 && (
+          <span className="recommendation-tag">+{problem.topics.length - 3}</span>
+        )}
+      </div>
+
+      <div className="recommendation-similarity">
+        {type === 'similar' ? '🎯 Similar topics' : '⬆️ Next level'}
+      </div>
+
+      <div className="recommendation-actions">
+        <button
+          className="open-problem-button"
+          onClick={() => onSelectProblem(problem)}
+        >
+          Practice This →
+        </button>
+        {problem.isFree && (
+          <a
+            href={getLeetCodeUrl(problem.name)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="leetcode-link-small"
+            title="Open on LeetCode"
+          >
+            🔗
+          </a>
+        )}
+      </div>
+    </div>
+  )
 
   return (
     <div className="recommendations-panel slide-in">
       <div className="recommendations-header">
         <h2 className="recommendations-title">Recommended Next Problems</h2>
         <div className="recommendations-subtitle">
-          Based on your solved problem: <strong>{currentProblem.title}</strong>
+          Based on your solved problem: <strong>{currentProblem.name}</strong>
         </div>
       </div>
-      
-      <div className="recommendations-list">
-        {recommendations.map((problem, index) => (
-          <div key={index} className="recommendation-card fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
-            <div className="recommendation-header">
-              <div className="recommendation-platform">
-                <span className="platform-icon">{getPlatformIcon(problem.platform)}</span>
-                <span>{problem.platform}</span>
-              </div>
-              <span 
-                className="recommendation-difficulty"
-                style={{ color: getDifficultyColor(problem.difficulty) }}
-              >
-                {problem.difficulty}
-              </span>
-            </div>
-            
-            <h3 className="recommendation-title">{problem.title}</h3>
-            
-            <div className="recommendation-tags">
-              {problem.tags.map((tag, tagIndex) => (
-                <span key={tagIndex} className="recommendation-tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            
-            <div className="recommendation-similarity">
-              {problem.similarity}
-            </div>
-            
-            <button className="open-problem-button">
-              Open Problem →
-            </button>
+
+      {harderProblems.length > 0 && (
+        <div className="recommendations-section">
+          <h3 className="section-title">📈 Challenge Yourself</h3>
+          <div className="recommendations-list">
+            {harderProblems.map((problem, index) => renderProblemCard(problem, index, 'harder'))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {similarProblems.length > 0 && (
+        <div className="recommendations-section">
+          <h3 className="section-title">🔄 Practice Similar</h3>
+          <div className="recommendations-list">
+            {similarProblems.map((problem, index) => renderProblemCard(problem, index, 'similar'))}
+          </div>
+        </div>
+      )}
+
+      {harderProblems.length === 0 && similarProblems.length === 0 && (
+        <div className="no-recommendations">
+          No recommendations available for this problem.
+        </div>
+      )}
     </div>
   )
 }

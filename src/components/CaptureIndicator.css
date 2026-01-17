@@ -1,0 +1,187 @@
+.capture-indicator {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.capture-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recording-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff4444;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.status-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.capture-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    background: var(--bg-primary);
+    border-radius: 4px;
+}
+
+.capture-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.toggle-button,
+.manual-capture-button {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+}
+
+.toggle-button.active {
+    background: rgba(255, 68, 68, 0.15);
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.toggle-button:hover,
+.manual-capture-button:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+
+/* Consent Dialog */
+.capture-consent {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.consent-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.consent-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.consent-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.consent-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.consent-button {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.consent-button.accept {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    color: #000;
+}
+
+.consent-button.accept:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+.consent-button.decline {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.consent-button.decline:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .capture-indicator {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .capture-controls {
+        width: 100%;
+    }
+
+    .toggle-button,
+    .manual-capture-button {
+        flex: 1;
+    }
+
+    .consent-content {
+        padding: 24px;
+    }
+
+    .consent-actions {
+        flex-direction: column;
+    }
+}

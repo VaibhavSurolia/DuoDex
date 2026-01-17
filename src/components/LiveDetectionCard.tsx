@@ -1,8 +1,9 @@
-import { ProblemState, DetectedProblem } from '../App'
+import { ProblemState, Problem } from '../types'
+import { getLeetCodeUrl } from '../utils/dataLoader'
 import './LiveDetectionCard.css'
 
 interface LiveDetectionCardProps {
-  problem: DetectedProblem
+  problem: Problem
   isDetectionActive: boolean
   onMarkSolved: () => void
   onMarkStuck: () => void
@@ -31,10 +32,6 @@ function LiveDetectionCard({
     }
   }
 
-  const getPlatformIcon = (platform: string) => {
-    return platform === 'LeetCode' ? '📘' : '🔴'
-  }
-
   if (problemState === 'solved' || problemState === 'stuck') {
     return null
   }
@@ -47,47 +44,64 @@ function LiveDetectionCard({
           ↻
         </button>
       </div>
-      
+
       <div className="detection-card-content">
         <div className="platform-badge">
-          <span className="platform-icon">{getPlatformIcon(problem.platform)}</span>
-          <span className="platform-name">{problem.platform}</span>
+          <span className="platform-icon">📘</span>
+          <span className="platform-name">LeetCode</span>
+          <span className="problem-id">#{problem.id}</span>
         </div>
-        
-        <h3 className="problem-title">{problem.title}</h3>
-        
+
+        <h3 className="problem-title">{problem.name}</h3>
+
         <div className="problem-meta">
-          <span 
+          <span
             className="difficulty-label"
             style={{ color: getDifficultyColor(problem.difficulty) }}
           >
             {problem.difficulty}
           </span>
-          
-          <div className="tags">
-            {problem.tags.map((tag, index) => (
-              <span key={index} className="tag">
-                {tag}
-              </span>
-            ))}
+
+          <div className="problem-stats">
+            <span title="Acceptance Rate">✓ {problem.acceptanceRate.toFixed(1)}%</span>
+            <span title="Likes">👍 {problem.likes.toLocaleString()}</span>
+            {problem.isFree && <span title="Free Problem">🆓</span>}
           </div>
         </div>
-        
+
+        <div className="tags">
+          {problem.topics.map((tag, index) => (
+            <span key={index} className="tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+
         <div className="detection-source">
           <span className="detection-source-text">Detected from active screen</span>
+          {problem.isFree && (
+            <a
+              href={getLeetCodeUrl(problem.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="leetcode-link"
+            >
+              Open on LeetCode →
+            </a>
+          )}
         </div>
       </div>
-      
+
       <div className="action-buttons">
-        <button 
+        <button
           className="action-button primary"
           onClick={onMarkSolved}
         >
           <span>Mark as Solved</span>
           <span className="button-icon">✅</span>
         </button>
-        
-        <button 
+
+        <button
           className="action-button secondary"
           onClick={onMarkStuck}
         >
