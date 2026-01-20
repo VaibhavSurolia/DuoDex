@@ -45,11 +45,11 @@ export async function generateHint(request: HintRequest): Promise<HintResponse> 
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
         const prompt = buildPrompt(request)
         const result = await model.generateContent(prompt)
-        const response = await result.response
+        const response =  result.response
         const text = response.text()
 
         // Parse the response
